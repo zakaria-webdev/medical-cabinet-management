@@ -1,13 +1,13 @@
 # medical-cabinet-management
 Système de gestion de cabinet médical conçu pour simplifier le suivi des patients et la prise de rendez-vous.
 
-## 📖 About The Project / À propos du projet
+## 📖 À propos du projet
 
-This project is a comprehensive **Medical Clinic Management System** (Système de Gestion de Cabinet Médical) developed to streamline and automate the daily administrative and medical tasks of a doctor's office. 
+Ce projet est un **Système de Gestion de Cabinet Médical** complet, développé pour simplifier et automatiser les tâches administratives et médicales quotidiennes d'un cabinet médical. 
 
-The primary goal of this application is to provide a digital solution that replaces traditional paper-based methods, ensuring better organization, faster access to information, and an improved experience for both the medical staff and the patients.
+L'objectif principal de cette application est de fournir une solution numérique qui remplace les méthodes traditionnelles sur papier, garantissant ainsi une meilleure organisation, un accès plus rapide aux informations et une expérience améliorée tant pour le personnel médical que pour les patients.
 
-### ✨ Key Features
-* **Patient Management:** Add, update, and manage patient profiles and personal information.
-* **Appointment Scheduling:** Book, modify, or cancel patient appointments easily.
-* **Medical Records (Dossiers Médicaux):** Keep track of medical histories, consultations, and prescriptions.
+### ✨ Fonctionnalités Principales
+* **Gestion des patients :** Ajouter, mettre à jour et gérer les profils des patients et leurs informations personnelles.
+* **Prise de rendez-vous :** Planifier, modifier ou annuler facilement les rendez-vous des patients.
+* **Dossiers Médicaux :** Assurer le suivi des antécédents médicaux, des consultations et des prescriptions.
