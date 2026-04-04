@@ -18,46 +18,54 @@
                     <div class="card-body p-4">
 
                         <form action="{{ route('patients.store') }}" method="POST">
-                            @csrf <div class="row">
+                            @csrf
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Nom</label>
-                                    <input type="text" name="nom" class="form-control" placeholder="Nom du patient" required>
+                                    <input type="text" name="nom" class="form-control @error('nom') is-invalid @enderror" value="{{ old('nom') }}" placeholder="Nom du patient" required>
+                                    @error('nom') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Prénom</label>
-                                    <input type="text" name="prenom" class="form-control" placeholder="Prénom du patient" required>
+                                    <input type="text" name="prenom" class="form-control @error('prenom') is-invalid @enderror" value="{{ old('prenom') }}" placeholder="Prénom du patient" required>
+                                    @error('prenom') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">CIN</label>
-                                    <input type="text" name="cin" class="form-control" placeholder="Ex: AB123456">
+                                    <input type="text" name="cin" class="form-control @error('cin') is-invalid @enderror" value="{{ old('cin') }}" placeholder="Ex: AB123456">
+                                    @error('cin') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Téléphone</label>
-                                    <input type="text" name="telephone" class="form-control" placeholder="06XXXXXXXX" required>
+                                    <input type="text" name="telephone" class="form-control @error('telephone') is-invalid @enderror" value="{{ old('telephone') }}" placeholder="06XXXXXXXX" required>
+                                    @error('telephone') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Date de Naissance</label>
-                                    <input type="date" name="date_naissance" class="form-control" required>
+                                    <input type="date" name="date_naissance" class="form-control @error('date_naissance') is-invalid @enderror" value="{{ old('date_naissance') }}" required>
+                                    @error('date_naissance') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">Sexe</label>
-                                    <select name="sexe" class="form-select" required>
+                                    <select name="sexe" class="form-select @error('sexe') is-invalid @enderror" required>
                                         <option value="">Choisir...</option>
-                                        <option value="Homme">Homme</option>
-                                        <option value="Femme">Femme</option>
+                                        <option value="Homme" {{ old('sexe') == 'Homme' ? 'selected' : '' }}>Homme</option>
+                                        <option value="Femme" {{ old('sexe') == 'Femme' ? 'selected' : '' }}>Femme</option>
                                     </select>
+                                    @error('sexe') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Adresse</label>
-                                <textarea name="adresse" class="form-control" rows="3" placeholder="Adresse complète"></textarea>
+                                <textarea name="adresse" class="form-control @error('adresse') is-invalid @enderror" rows="3" placeholder="Adresse complète">{{ old('adresse') }}</textarea>
+                                @error('adresse') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="d-flex justify-content-end gap-2">
