@@ -12,13 +12,17 @@ Route::get('/', function () {
  * Route pour afficher la liste des patients
  * URL: http://localhost:8000/patients
  */
-Route::get('/patients', [PatientController::class, 'index']);
+// Route::get('/patients', [PatientController::class, 'index']);
 
-// هادي باش تفتح صفحة "إضافة مريض"
-Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
+// // هادي باش تفتح صفحة "إضافة مريض"
+// Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
 
-// هادي باش تسجل البيانات (POST)
-Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
+// // هادي باش تسجل البيانات (POST)
+// Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
 
-// ونزيدو سمية (Name) للرابط القديم باش نسهلو الخدمة
-Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+// // ونزيدو سمية (Name) للرابط القديم باش نسهلو الخدمة
+// Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+
+// هاد السطر السحري كيعوض 7 ديال الروابط دقة وحدة
+// (index, create, store, show, edit, update, destroy)
+Route::resource('patients', PatientController::class);

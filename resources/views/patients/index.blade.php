@@ -26,9 +26,22 @@
                     </a>
                 </div>
             </div>
-
+            <!-- بداية شريط البحث -->
+            <div class="p-3 bg-white border-bottom">
+                <form action="{{ route('patients.index') }}" method="GET" class="mb-0">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="🔍 Rechercher par Nom, Prénom ou CIN..." value="{{ request('search') }}">
+                        <button class="btn btn-dark" type="submit">Rechercher</button>
+                        @if(request('search'))
+                            <a href="{{ route('patients.index') }}" class="btn btn-outline-danger">❌ Annuler</a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+            <!-- نهاية شريط البحث -->
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
+                <!-- زدت هنا align-middle باش يجيو البوطونات مقادين مع السطورة -->
+                <table class="table table-hover align-middle mb-0">
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
@@ -36,6 +49,7 @@
                             <th>Prénom</th>
                             <th>CIN</th>
                             <th>Téléphone</th>
+                            <th class="text-center">Actions</th> <!-- العمود الجديد -->
                         </tr>
                     </thead>
                     <tbody>
@@ -46,6 +60,30 @@
                             <td>{{ $patient->prenom }}</td>
                             <td><span class="badge bg-secondary text-uppercase">{{ $patient->cin }}</span></td>
                             <td>{{ $patient->telephone }}</td>
+
+                            <!-- البوطونات ديال التحكم -->
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- بوطون Voir -->
+                                    <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info text-white" title="Voir les détails">
+                                        👁️
+                                    </a>
+
+                                    <!-- بوطون Modifier -->
+                                    <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-warning" title="Modifier">
+                                        ✏️
+                                    </a>
+
+                                    <!-- بوطون Supprimer -->
+                                    <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');" class="m-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                            🗑️
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

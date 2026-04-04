@@ -11,12 +11,22 @@ class PatientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+   public function index(\Illuminate\Http\Request $request)
     {
-        // جلب كاع المرضى من لاباز دوني
-        $patients = Patient::all();
+        // كنقلبو واش كاين شي كلمة تتبحث عليها السكريتيرة
+        $search = $request->input('search');
 
-        // صيفطهم لواحد الصفحة سميتها index كاينا فدوسي patients
+        if ($search) {
+            // إلا كليكات على بحث، كنجيبو غير اللي فيهم ديك السمية أو الكنية أو CIN
+            $patients = \App\Models\Patient::where('nom', 'LIKE', "%{$search}%")
+                                ->orWhere('prenom', 'LIKE', "%{$search}%")
+                                ->orWhere('cin', 'LIKE', "%{$search}%")
+                                ->get();
+        } else {
+            // إلا ماكاتقلب على والو، كنجيبو كلشي
+            $patients = \App\Models\Patient::all();
+        }
+
         return view('patients.index', compact('patients'));
     }
 
@@ -35,11 +45,13 @@ class PatientController extends Controller
     {
         // التحقق من البيانات (Validation)
         $request->validate([
-            'nom' => 'required',
-            'prenom' => 'required',
-            'telephone' => 'required',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'cin' => 'nullable|string|max:20|unique:patients', // الـ CIN خاصو يكون ما معاودش
+            'telephone' => 'required|string|max:20',
             'date_naissance' => 'required|date',
-            'sexe' => 'required',
+            'sexe' => 'required|in:Homme,Femme',
+            'adresse' => 'nullable|string',
         ]);
 
         // تسجيل المريض فـ قاعدة البيانات
@@ -52,32 +64,60 @@ class PatientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Patient $patient)
+    public function show($id)
     {
-        //
+        // كنقلبو على المريض بالـ ID ديالو
+        $patient = \App\Models\Patient::findOrFail($id);
+
+        // كنصيفطو هاد المريض لواحد الصفحة سميتها show باش تبين المعلومات ديالو
+        return view('patients.show', compact('patient'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Patient $patient)
+    public function edit($id)
     {
-        //
+        $patient = \App\Models\Patient::findOrFail($id);
+        return view('patients.edit', compact('patient'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Patient $patient)
+    public function update(Request $request, $id)
     {
-        //
+        // 1. Validation: كنتأكدو من المعلومات (رد البال لـ CIN باش ما يعطيش إيرور إذا بقى هو هو)
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'cin' => 'nullable|string|max:20|unique:patients,cin,'.$id, // كنستثنيو المريض الحالي من الفحص ديال CIN
+            'telephone' => 'required|string|max:20',
+            'date_naissance' => 'required|date',
+            'sexe' => 'required|in:Homme,Femme',
+            'adresse' => 'nullable|string',
+        ]);
+
+        // 2. كنقلبو على المريض وكنبدلو ليه الداتا
+        $patient = \App\Models\Patient::findOrFail($id);
+        $patient->update($request->all());
+
+        // 3. كنرجعو للائحة مع ميساج ديال النجاح
+        return redirect()->route('patients.index')->with('success', 'Les informations du patient ont été mises à jour avec succès !');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Patient $patient)
+    public function destroy($id)
     {
-        //
+        // 1. كنقلبو على المريض بالـ ID ديالو
+        $patient = \App\Models\Patient::findOrFail($id);
+
+        // 2. كمسحوه من لاباز دوني
+        $patient->delete();
+
+        // 3. كنرجعو للصفحة اللولة مع ميساج بلي راه تمسح
+        return redirect()->route('patients.index')->with('success', 'Le patient a été supprimé avec succès !');
     }
 }
