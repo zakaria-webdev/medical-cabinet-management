@@ -24,11 +24,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'nom' => fake()->lastName(),
+            'prenom' => fake()->firstName(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            // 'email_verified_at' => now(),  <-- هاد السطر هو اللي داير المشكل، غانديرو ليه كومونطير أو نمسحوه
+            'password' => bcrypt('password'), // كلمة السر هي password
+            'role' => 'patient',
+            'remember_token' => \Illuminate\Support\Str::random(10),
         ];
     }
 

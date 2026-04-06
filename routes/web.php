@@ -6,6 +6,8 @@ use App\Http\Controllers\PatientController;
 // [Houcine] Ajout de AuthController pour gérer l'inscription, connexion et déconnexion
 use App\Http\Controllers\AuthController;
 
+use App\Http\Controllers\DossierMedicalController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -72,3 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/secretaire/dashboard', fn() => view('dashboard.secretaire'))->name('secretaire.dashboard');
     Route::get('/admin/dashboard', fn() => view('dashboard.admin'))->name('admin.dashboard');
 });
+
+// [ZAKARIA] : J'ai généré toutes les routes CRUD pour le dossier médical d'un coup.
+// @Haucine : Quand tu auras terminé le système de Connexion/Sécurité,
+// n'oublie pas d'envelopper cette route avec le middleware 'auth' pour la protéger !
+Route::resource('dossiers', DossierMedicalController::class);

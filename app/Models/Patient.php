@@ -20,4 +20,10 @@ class Patient extends Model
         'sexe',
         'adresse'
     ];
+
+    // هادي هي الدالة اللي خاصك تزيد دابا (علاقة One-to-One)
+    public function dossierMedical()
+    {
+        return $this->hasOne(DossierMedical::class);
+    }
 }
