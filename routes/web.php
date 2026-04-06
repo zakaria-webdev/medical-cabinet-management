@@ -7,6 +7,8 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\DossierMedicalController;
+// [Houcine] Ajout de UserController pour la gestion des rôles
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,7 +31,24 @@ Route::get('/', function () {
 
 // هاد السطر السحري كيعوض 7 ديال الروابط دقة وحدة
 // (index, create, store, show, edit, update, destroy)
-Route::resource('patients', PatientController::class);
+// [Houcine] Route originale commentée — remplacée par la version protégée par rôle ci-dessous
+// Route::resource('patients', PatientController::class);
+
+// [Houcine] Protection des routes patients par rôle :
+// - Admin : accès complet (CRUD)
+// - Médecin + Secrétaire : lecture seule (index + show)
+Route::middleware(['auth', 'role:admin,medecin,secretaire'])->group(function () {
+    Route::resource('patients', PatientController::class);
+
+    // [Houcine] Gestion des rôles — accessible uniquement par l'admin
+    // GET  /admin/users          → liste tous les utilisateurs avec dropdown de rôle
+    // POST /admin/users/{user}/role → met à jour le rôle d'un utilisateur
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
+});
+
+// [Houcine] Médecin et Secrétaire ont accès via le groupe ci-dessus (role:admin,medecin,secretaire)
+// Le controller PatientController gère les permissions fines (ex: destroy réservé à admin)
 
 // ============================================================
 // [Houcine] ROUTES D'AUTHENTIFICATION
@@ -78,4 +97,12 @@ Route::middleware('auth')->group(function () {
 // [ZAKARIA] : J'ai généré toutes les routes CRUD pour le dossier médical d'un coup.
 // @Haucine : Quand tu auras terminé le système de Connexion/Sécurité,
 // n'oublie pas d'envelopper cette route avec le middleware 'auth' pour la protéger !
-Route::resource('dossiers', DossierMedicalController::class);
+// [Houcine] Route originale commentée — remplacée par la version protégée par rôle ci-dessous
+// Route::resource('dossiers', DossierMedicalController::class);
+
+// [Houcine] Protection des routes dossiers par rôle :
+// - Admin + Médecin : accès complet (CRUD)
+// - Secrétaire et Patient : accès refusé, redirigé vers leur dashboard
+Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
+    Route::resource('dossiers', DossierMedicalController::class);
+});

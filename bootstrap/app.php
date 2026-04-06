@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // [Houcine] Enregistrement du middleware CheckRole sous l'alias "role"
+        // Utilisation dans les routes : middleware('role:admin') ou middleware('role:admin,medecin')
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
