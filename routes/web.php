@@ -6,9 +6,40 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DossierMedicalController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\NotificationController;
 
+// [Houcine] Route racine - redirige vers login si non connecté, dashboard si connecté
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        $role = auth()->user()->role;
+        return match($role) {
+            'admin'      => redirect()->route('admin.dashboard'),
+            'medecin'    => redirect()->route('medecin.dashboard'),
+            'secretaire' => redirect()->route('secretaire.dashboard'),
+            'patient'    => redirect()->route('patient.dashboard'),
+            default      => redirect()->route('login'),
+        };
+    }
+    return redirect()->route('login');
+});
+
+// [Houcine] Routes dashboard par rôle - Sprint 1
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('dashboard.admin');
+    })->middleware('role:admin')->name('admin.dashboard');
+
+    Route::get('/medecin/dashboard', function () {
+        return view('dashboard.medecin');
+    })->middleware('role:medecin')->name('medecin.dashboard');
+
+    Route::get('/secretaire/dashboard', function () {
+        return view('dashboard.secretaire');
+    })->middleware('role:secretaire')->name('secretaire.dashboard');
+
+    Route::get('/patient/dashboard', function () {
+        return view('dashboard.patient');
+    })->middleware('role:patient')->name('patient.dashboard');
 });
 
 Route::middleware(['auth', 'role:admin,medecin,secretaire'])->group(function () {
@@ -42,11 +73,36 @@ Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
 // ============================================================
 // [Amine] ROUTES RENDEZ-VOUS - Sprint 2
 // ============================================================
-Route::middleware(['auth', 'role:admin,medecin,secretaire'])->group(function () {
-    Route::resource('rendezvous', RendezVousController::class)
-        ->parameters(['rendezvous' => 'rendezVous']);
-    Route::get('/rendezvous-calendar', [RendezVousController::class, 'calendar'])
+// RDV accessible à tous les rôles authentifiés -
+Route::middleware(['auth'])->group(function () {
+    Route::resource('rendezvous', RendezVousController::class);
+    Route::get('rendezvous-calendar', [RendezVousController::class, 'calendar'])
         ->name('rendezvous.calendar');
-    Route::get('/api/rendezvous/events', [RendezVousController::class, 'calendarData'])
+    Route::get('api/rendezvous/events', [RendezVousController::class, 'calendarData'])
         ->name('rendezvous.calendar.data');
+});
+
+// ============================================================
+// [Houcine] ROUTES NOTIFICATIONS - Sprint 2
+// ============================================================
+// Ces routes permettent à l'utilisateur connecté de :
+//   - voir toutes ses notifications         → GET  /notifications
+//   - marquer une notification comme lue    → POST /notifications/{id}/read
+//   - marquer toutes comme lues             → POST /notifications/read-all
+//
+// Protégées par middleware 'auth' uniquement :
+// toutes les rôles ont accès à leurs propres notifications
+// (médecin, secrétaire, admin, patient)
+// ============================================================
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    // IMPORTANT : la route read-all doit être AVANT {id}/read
+    // sinon Laravel interpréterait "read-all" comme un {id}
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.markAllAsRead');
+
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAsRead');
 });

@@ -11,14 +11,25 @@
 
     <form method="POST" action="{{ route('rendezvous.store') }}">
         @csrf
-        <div class="mb-3">
-            <label class="form-label">Patient</label>
-            <select name="patient_id" class="form-select" required>
-                @foreach($patients as $p)
-                    <option value="{{ $p->id }}">{{ $p->nom }} {{ $p->prenom }}</option>
-                @endforeach
-            </select>
-        </div>
+@if(auth()->user()->role === 'patient')
+    {{-- [Houcine] Patient voit son propre nom, ne peut pas choisir un autre patient --}}
+    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+    <div class="mb-3">
+        <label class="form-label">Patient</label>
+        <input type="text" class="form-control"
+               value="{{ $patient->nom }} {{ $patient->prenom }}" disabled>
+    </div>
+@else
+    {{-- Admin, secrétaire, médecin → dropdown complet --}}
+    <div class="mb-3">
+        <label class="form-label">Patient</label>
+        <select name="patient_id" class="form-select" required>
+            @foreach($patients as $p)
+                <option value="{{ $p->id }}">{{ $p->nom }} {{ $p->prenom }}</option>
+            @endforeach
+        </select>
+    </div>
+@endif
         <div class="mb-3">
             <label class="form-label">Médecin</label>
             <select name="medecin_id" class="form-select" required>

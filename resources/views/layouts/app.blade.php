@@ -8,6 +8,9 @@
     <title>Cabinet Médical</title>
     {{-- [Houcine] Bootstrap 5 CDN → shared design for all pages --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- [Houcine] @stack('styles') → allows child views to inject CSS via @push('styles') --}}
+    {{-- Example: calendar.blade.php pushes FullCalendar CSS here --}}
+    @stack('styles')
 </head>
 <body>
 
@@ -18,6 +21,7 @@
             <div class="ms-auto">
                 @auth
                     {{-- [Houcine] @auth = shown only if user is logged in --}}
+                    @include('partials.notification-bell')
                     <span class="text-white me-3">{{ auth()->user()->prenom }} {{ auth()->user()->nom }}</span>
                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                         @csrf
@@ -40,5 +44,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- [Houcine] @stack('scripts') → allows child views to inject JS via @push('scripts') --}}
+    {{-- Example: calendar.blade.php pushes FullCalendar JS here, AFTER Bootstrap --}}
+    @stack('scripts')
 </body>
 </html>

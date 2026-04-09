@@ -9,31 +9,55 @@ use App\Models\RendezVous;   // <<— hadi khassha
 use App\Models\Patient;      // <<— hadi khassha
 use App\Models\User;         // <<— hadi khassha
 //************************* */
+// [Houcine] Import Mail facade et Mailable pour envoi email confirmation - Sprint 2
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RendezVousConfirme;
 
 class RendezVousController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $rendezvous = RendezVous::with(['patient', 'medecin'])
-            ->orderBy('date_rdv')
-            ->orderBy('heure_rdv')
-            ->paginate(15);
+public function index()
+{
+    $user = auth()->user();
 
-        return view('rendezvous.index', compact('rendezvous'));
+    // [Houcine] Filtrage RDV par rôle - Sprint 2
+    // Patient → voit uniquement ses propres RDV
+    // Médecin → voit uniquement ses propres RDV
+    // Admin / Secrétaire → voient tous les RDV
+    $query = RendezVous::with(['patient', 'medecin'])
+        ->orderBy('date_rdv')
+        ->orderBy('heure_rdv');
+
+    if ($user->role === 'patient') {
+        $patient = Patient::where('user_id', $user->id)->firstOrFail();
+        $query->where('patient_id', $patient->id);
+    } elseif ($user->role === 'medecin') {
+        $query->where('medecin_id', $user->id);
     }
+
+    $rendezvous = $query->paginate(15);
+
+    return view('rendezvous.index', compact('rendezvous'));
+}
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        $patients = Patient::orderBy('nom')->get();
-        $medecins = User::where('role', 'medecin')->orderBy('nom')->get();
-        return view('rendezvous.create', compact('patients', 'medecins'));
+  public function create()
+{
+    $medecins = User::where('role', 'medecin')->get();
+
+    // [Houcine] Patient ne peut prendre RDV que pour lui-même - Sprint 2
+    if (auth()->user()->role === 'patient') {
+        $patient = Patient::where('user_id', auth()->id())->firstOrFail();
+        return view('rendezvous.create', compact('medecins', 'patient'));
     }
+
+    $patients = Patient::orderBy('nom')->get();
+    return view('rendezvous.create', compact('patients', 'medecins'));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -63,11 +87,33 @@ class RendezVousController extends Controller
                 ->withErrors(['heure_rdv' => 'Ce médecin a déjà un RDV à ce créneau.'])
                 ->withInput();
         }
+    // [Houcine] Sécurité serveur: forcer patient_id si rôle = patient
+// Ne jamais faire confiance au HTML seul - validation côté serveur obligatoire
+if (auth()->user()->role === 'patient') {
+    $patient = Patient::where('user_id', auth()->id())->firstOrFail();
+    $validated['patient_id'] = $patient->id;
+}
 
-        RendezVous::create($validated);
+   // Créer le RDV en base de données
+// create() retourne l'objet RendezVous créé avec son ID généré
+$rendezVous = RendezVous::create($validated);
 
-        return redirect()->route('rendezvous.index')
-            ->with('success', 'Rendez-vous créé avec succès.');
+// [Houcine] Envoi email de confirmation après création du RDV - Sprint 2
+// On recharge les relations patient et medecin car create() ne les charge pas
+// sans eager loading → $rendezVous->patient serait null sans load()
+$rendezVous->load(['patient', 'medecin']);
+
+// Mail::to() = définit le destinataire de l'email
+// On envoie au médecin concerné par le RDV
+// ->send() = envoie immédiatement (synchrone, pas de queue)
+// new RendezVousConfirme($rendezVous) = instancie le Mailable avec le RDV
+if ($rendezVous->medecin && $rendezVous->medecin->email) {
+    Mail::to($rendezVous->medecin->email)
+        ->send(new RendezVousConfirme($rendezVous));
+}
+
+return redirect()->route('rendezvous.index')
+    ->with('success', 'Rendez-vous créé avec succès. Email de confirmation envoyé.');
     }
 
     /**
@@ -117,25 +163,35 @@ class RendezVousController extends Controller
         return redirect()->route('rendezvous.index')->with('success','Supprimé.');
     }
 
-    public function calendarData()
-    {
-        $rdvs = RendezVous::with(['patient','medecin'])->get();
+ public function calendarData()
+{
+    $user = auth()->user();
 
-        $events = $rdvs->map(fn($r) => [
-            'id'    => $r->id,
-            'title' => $r->patient->nom.' — '.$r->medecin->nom,
-            'start' => $r->date_rdv->format('Y-m-d').'T'.$r->heure_rdv,
-            'color' => match($r->statut) {
-                'confirmé'  => '#1D9E75',
-                'annulé'    => '#E24B4A',
-                'terminé'   => '#888780',
-                default     => '#378ADD',
-            },
-            'url'   => route('rendezvous.edit', $r->id),
-        ]);
+    // [Houcine] Filtrage calendrier par rôle - Sprint 2
+    $query = RendezVous::with(['patient', 'medecin']);
 
-        return response()->json($events);
+    if ($user->role === 'patient') {
+        $patient = Patient::where('user_id', $user->id)->firstOrFail();
+        $query->where('patient_id', $patient->id);
+    } elseif ($user->role === 'medecin') {
+        $query->where('medecin_id', $user->id);
     }
+
+    $events = $query->get()->map(fn($r) => [
+        'id'    => $r->id,
+        'title' => $r->patient->nom . ' — ' . $r->medecin->nom,
+        'start' => $r->date_rdv->format('Y-m-d') . 'T' . $r->heure_rdv,
+        'color' => match($r->statut) {
+            'confirmé' => '#1D9E75',
+            'annulé'   => '#E24B4A',
+            'terminé'  => '#888780',
+            default    => '#378ADD',
+        },
+        'url' => route('rendezvous.show', $r->id),
+    ]);
+
+    return response()->json($events);
+}
 
 
     public function calendar()
