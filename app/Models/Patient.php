@@ -26,4 +26,9 @@ class Patient extends Model
     {
         return $this->hasOne(DossierMedical::class);
     }
+
+        public function rendezvous()
+    {
+        return $this->hasMany(RendezVous::class, 'patient_id');
+    }
 }
