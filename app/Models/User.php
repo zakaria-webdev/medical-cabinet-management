@@ -50,7 +50,10 @@ class User extends Authenticatable
 
     // Un médecin (User) a PLUSIEURS rendez-vous
     // 'medecin_id' = on précise la FK car elle ne s'appelle pas 'user_id'
-
+    public function rendezVous()
+    {
+        return $this->hasMany(RendezVous::class, 'medecin_id');
+    }
 
     // =============================================
     // HELPERS DE RÔLE
@@ -74,15 +77,8 @@ class User extends Authenticatable
         return $this->role === 'patient';
     }
 
-    public function rendezvous()
-    {
-        return $this->hasMany(RendezVous::class, 'medecin_id');
-    }
-
     public function isSecretaire(): bool
     {
         return $this->role === 'secretaire';
     }
-
-    
 }

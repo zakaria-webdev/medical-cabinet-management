@@ -10,9 +10,6 @@ use App\Http\Controllers\DossierMedicalController;
 // [Houcine] Ajout de UserController pour la gestion des rôles
 use App\Http\Controllers\UserController;
 
-use App\Http\Controllers\RendezVousController;
-
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -108,35 +105,4 @@ Route::middleware('auth')->group(function () {
 // - Secrétaire et Patient : accès refusé, redirigé vers leur dashboard
 Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
     Route::resource('dossiers', DossierMedicalController::class);
-});
-
-// [Amine] redez-vous:
-Route::get('/rendezvous/calendar', [RendezVousController::class, 'calendar'])
-    ->name('rendezvous.calendar');
-
-Route::get('/api/rendezvous/events', [RendezVousController::class, 'calendarData'])
-    ->name('rendezvous.calendar.data');
-
-//---------------------------------------------
-
-
-
-Route::middleware(['auth'])->group(function() {
-
-    // CRUD complet (index, create, store, edit, update, destroy)
-    //Route::resource('rendezvous', RendezVousController::class);
-    /********************************************* */
-
-    Route::resource('rendezvous', RendezVousController::class)
-    ->parameters([
-        'rendezvous' => 'rendezVous'
-    ]);
-    /********************************************* */
-
-    // Routes supplémentaires pour le calendrier
-    Route::get('/rendezvous-calendar',
-        [RendezVousController::class, 'calendar'])->name('rendezvous.calendar');
-
-    Route::get('/api/rdv-events',
-        [RendezVousController::class, 'calendarData'])->name('rendezvous.calendar.data');
 });
