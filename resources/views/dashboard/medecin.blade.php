@@ -18,6 +18,20 @@
     <a href="/patients" class="btn btn-outline-primary">
         🏥 Mes Patients
     </a>
+
+    {{-- [Zakaria] Boutons ajoutés pour la gestion des Dossiers et Consultations --}}
+
+    <a href="{{ route('dossiers.index') }}" class="btn btn-info text-white shadow-sm">
+        📂 Liste des Dossiers
+    </a>
+
+    <a href="{{ route('consultations.create') }}" class="btn btn-warning shadow-sm">
+        ➕ Nouvelle Consultation
+    </a>
+
+    <a href="{{ route('consultations.index') }}" class="btn btn-outline-dark shadow-sm">
+        📝 Historique
+    </a>
 </div>
 
 @endsection

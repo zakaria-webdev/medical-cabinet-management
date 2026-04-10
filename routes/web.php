@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RendezVousController;
 use App\Http\Controllers\NotificationController;
 
+
+
 // [Houcine] Route racine - redirige vers login si non connecté, dashboard si connecté
 Route::get('/', function () {
     if (auth()->check()) {
@@ -106,3 +108,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
         ->name('notifications.markAsRead');
 });
+
+
+use App\Http\Controllers\ConsultationController;
+
+// Zakaria : Routes pour les consultations et ordonnances
+// Protégées par le middleware d'authentification de Houcine
+Route::resource('consultations', ConsultationController::class)->middleware(['auth']);
+// Zakaria : Routes pour generer en PDF
+Route::get('/consultations/{id}/pdf', [ConsultationController::class, 'generatePDF'])->name('consultations.pdf');

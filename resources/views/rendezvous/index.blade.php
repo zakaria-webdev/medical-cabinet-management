@@ -1,16 +1,24 @@
 @extends('layouts.app')
 @section('content')
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Rendez-vous</h2>
-        <div>
-            <a href="{{ route('rendezvous.calendar') }}" class="btn btn-outline-primary me-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('medecin.dashboard') }}" class="btn btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+            <h2 class="mb-0">Rendez-vous</h2>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{{ route('rendezvous.calendar') }}" class="btn btn-outline-primary shadow-sm">
                 Calendrier
             </a>
-            <a href="{{ route('rendezvous.create') }}" class="btn btn-primary">
+            <a href="{{ route('rendezvous.create') }}" class="btn btn-primary shadow-sm">
                 + Nouveau RDV
             </a>
         </div>
+
     </div>
 
     @if(session('success'))

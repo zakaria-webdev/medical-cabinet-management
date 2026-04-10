@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cabinet Médical - Liste des Patients</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-light">
 
@@ -20,13 +21,21 @@
         <div class="card shadow-lg border-0">
             <div class="card-header bg-primary text-white py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Liste des Patients</h3>
-                    <a href="{{ route('patients.create') }}" class="btn btn-light fw-bold text-primary">
+
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="{{ route('medecin.dashboard') }}" class="btn btn-light btn-sm fw-bold text-primary shadow-sm" title="Retour au Tableau de bord">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <h3 class="mb-0">Liste des Patients</h3>
+                    </div>
+
+                    <a href="{{ route('patients.create') }}" class="btn btn-light fw-bold text-primary shadow-sm">
                         + Nouveau Patient
                     </a>
+
                 </div>
             </div>
-            <!-- بداية شريط البحث -->
+
             <div class="p-3 bg-white border-bottom">
                 <form action="{{ route('patients.index') }}" method="GET" class="mb-0">
                     <div class="input-group">
@@ -38,9 +47,7 @@
                     </div>
                 </form>
             </div>
-            <!-- نهاية شريط البحث -->
             <div class="card-body p-0">
-                <!-- زدت هنا align-middle باش يجيو البوطونات مقادين مع السطورة -->
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-dark">
                         <tr>
@@ -49,7 +56,7 @@
                             <th>Prénom</th>
                             <th>CIN</th>
                             <th>Téléphone</th>
-                            <th class="text-center">Actions</th> <!-- العمود الجديد -->
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,20 +68,23 @@
                             <td><span class="badge bg-secondary text-uppercase">{{ $patient->cin }}</span></td>
                             <td>{{ $patient->telephone }}</td>
 
-                            <!-- البوطونات ديال التحكم -->
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <!-- بوطون Voir -->
+
+                                    <a href="{{ route('consultations.create', ['patient_id' => $patient->id]) }}"
+                                       class="btn btn-sm btn-success text-white"
+                                       title="Démarrer une Consultation">
+                                        🩺
+                                    </a>
+
                                     <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info text-white" title="Voir les détails">
                                         👁️
                                     </a>
 
-                                    <!-- بوطون Modifier -->
                                     <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-warning" title="Modifier">
                                         ✏️
                                     </a>
 
-                                    <!-- بوطون Supprimer -->
                                     <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');" class="m-0">
                                         @csrf
                                         @method('DELETE')
