@@ -1,7 +1,12 @@
 @extends('layouts.app')
 @section('content')
 <div class="container" style="max-width:600px">
-    <h2 class="mb-4">Nouveau rendez-vous</h2>
+    <div class="d-flex align-items-center gap-3 mb-4 mt-2">
+    <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="btn btn-secondary shadow-sm">
+    <i class="fas fa-arrow-left"></i> Retour
+    </a>
+    <h2 class="mb-0" style="color: #0f2c4c;">Nouveau rendez-vous</h2>
+    </div>
 
     @if($errors->any())
         <div class="alert alert-danger">
