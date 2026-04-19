@@ -18,11 +18,11 @@ class RendezVousTest extends TestCase
     {
         // [Zakaria] Étape 1 : Création du User, du Patient et du Médecin.
         $userPatient = User::factory()->create(['role' => 'patient']);
-        
+
         // Nous ajoutons cette ligne au tableau des patients afin que la validation ne nous bloque pas.
         // Si vous ne disposez pas d'une usine à patients, nous travaillerons directement avec l'utilisateur.
-        $patient = \App\Models\Patient::factory()->create(['user_id' => $userPatient->id]); 
-        
+        $patient = \App\Models\Patient::factory()->create(['user_id' => $userPatient->id]);
+
         $medecin = User::factory()->create(['role' => 'medecin']);
 
         // [Zakaria] Étape 2 : On soumet le formulaire...
@@ -38,10 +38,10 @@ class RendezVousTest extends TestCase
         $response->assertRedirect(route('rendezvous.index'));
 
         // [Zakaria] Étape 4 : Vérification dans la base de données.
-        $this->assertDatabaseHas('rendez_vous', [ 
+        $this->assertDatabaseHas('rendez_vous', [
             'patient_id' => $patient->id,
             'medecin_id' => $medecin->id,
-            'date_rdv'   => '2026-05-20',
+            'date_rdv'   => '2026-05-20 00:00:00',
         ]);
     }
 }
