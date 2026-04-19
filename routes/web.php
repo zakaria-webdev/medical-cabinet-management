@@ -62,12 +62,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/patient/dashboard', fn() => view('dashboard.patient'))->name('patient.dashboard');
-    Route::get('/medecin/dashboard', fn() => view('dashboard.medecin'))->name('medecin.dashboard');
-    Route::get('/secretaire/dashboard', fn() => view('dashboard.secretaire'))->name('secretaire.dashboard');
-    Route::get('/admin/dashboard', fn() => view('dashboard.admin'))->name('admin.dashboard');
-});
+
 
 Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
     Route::resource('dossiers', DossierMedicalController::class);
