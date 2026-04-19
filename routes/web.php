@@ -22,7 +22,8 @@ Route::get('/', function () {
             default      => redirect()->route('login'),
         };
     }
-    return redirect()->route('login');
+    // return redirect()->route('login');
+    return view('welcome');
 });
 
 // [Houcine] Routes dashboard par rôle - Sprint 1

@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div class="d-flex align-items-center gap-3">
-            <a href="{{ route('medecin.dashboard') }}" class="btn btn-secondary shadow-sm">
+            <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="btn btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
             <h2 class="mb-0">Rendez-vous</h2>
