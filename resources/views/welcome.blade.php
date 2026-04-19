@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* [Zakaria] Custom CSS pour un design PRO inspiré des sites médicaux */
         :root {
-            --primary-dark: #0f2c4c; /* الأزرق الغامق ديال النافبار والفوتير */
-            --primary-light: #00a8e8; /* الأزرق الفاتح ديال الأزرار */
+            --primary-dark: #0f2c4c;
+            --primary-light: #00a8e8;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -135,7 +134,6 @@
             </div>
             <div class="text-center border-top border-secondary pt-3 mt-3">
                 <p class="mb-0 text-light" style="opacity: 0.8;">&copy; 2026 Cabinet Médical. Tous droits réservés.</p>
-                <small class="mb-0 text-light" style="opacity: 0.8;">Designed and Developed by Zakaria Oulamine</small>
             </div>
         </div>
     </footer>
