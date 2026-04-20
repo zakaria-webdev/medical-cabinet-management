@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use App\Models\RendezVous;
+use App\Models\Patient;
+use Illuminate\Support\Facades\DB;
+
 class UserController extends Controller
 {
     // =============================================
@@ -49,4 +53,52 @@ class UserController extends Controller
 
         return back()->with('success', 'Rôle de '.$user->prenom.' '.$user->nom.' mis à jour avec succès.');
     }
+
+
+
+    /**
+ * Dashboard Admin avec statistiques
+ */
+public function dashboard()
+{
+    // 1. عدد المرضى الكلي من table patients
+    $totalPatients = Patient::count();
+
+    // 2. عدد المستخدمين الكلي
+    $totalUsers = User::count();
+
+    // 3. المواعيد مجمعة حسب الحالة (statut)
+    // النتيجة: ['confirmé' => 5, 'annulé' => 2, ...]
+    $appointmentsByStatus = RendezVous::select('statut', DB::raw('count(*) as total'))
+        ->groupBy('statut')
+        ->pluck('total', 'statut')
+        ->toArray();
+
+    // 4. المواعيد حسب الشهر للسنة الحالية
+    $appointmentsByMonth = RendezVous::select(
+            DB::raw('MONTH(date_rdv) as month'),
+            DB::raw('count(*) as total')
+        )
+        ->whereYear('date_rdv', date('Y'))
+        ->groupBy('month')
+        ->pluck('total', 'month')
+        ->toArray();
+
+    // نحوّل لـ array من 12 شهر (شهور فارغة = 0)
+    $monthlyData = [];
+    for ($i = 1; $i <= 12; $i++) {
+        $monthlyData[] = $appointmentsByMonth[$i] ?? 0;
+    }
+
+    // 5. إجمالي المواعيد
+    $totalRdv = RendezVous::count();
+
+    return view('dashboard.admin', compact(
+        'totalPatients',
+        'totalUsers',
+        'appointmentsByStatus',
+        'monthlyData',
+        'totalRdv'
+    ));
+}
 }
