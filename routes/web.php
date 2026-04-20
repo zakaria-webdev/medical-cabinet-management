@@ -72,7 +72,13 @@ Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
 // ============================================================
 // RDV accessible à tous les rôles authentifiés -
 Route::middleware(['auth'])->group(function () {
-    Route::resource('rendezvous', RendezVousController::class);
+
+
+    // ✅ الجديد — حدد اسم الـ parameter يدوياً
+    Route::resource('rendezvous', RendezVousController::class)
+        ->parameters(['rendezvous' => 'rendezVous']);
+
+
     Route::get('rendezvous-calendar', [RendezVousController::class, 'calendar'])
         ->name('rendezvous.calendar');
     Route::get('api/rendezvous/events', [RendezVousController::class, 'calendarData'])
