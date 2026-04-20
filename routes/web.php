@@ -113,3 +113,14 @@ use App\Http\Controllers\ConsultationController;
 Route::resource('consultations', ConsultationController::class)->middleware(['auth']);
 // Zakaria : Routes pour generer en PDF
 Route::get('/consultations/{id}/pdf', [ConsultationController::class, 'generatePDF'])->name('consultations.pdf');
+
+
+
+
+Route::get('/install-db', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true
+    ]);
+    return 'Mabrouk! Database is ready. Sir dir Login daba.';
+});
