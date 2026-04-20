@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Admin',
                 'prenom' => 'Test',
                 'role' => 'admin',
-                'password' => Hash::make('12345678'), // دابا حددنا المودپاس بزز
+                'password' => Hash::make('password'), // دابا حددنا المودپاس بزز
             ]
         );
 
