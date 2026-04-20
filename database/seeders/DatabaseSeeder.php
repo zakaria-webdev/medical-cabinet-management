@@ -21,7 +21,27 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'), // دابا حددنا المودپاس بزز
             ]
         );
+        // 2. [الجديد] نكرييو 5 ديال الأطباء واجدين
+        // قائمة بأسماء الأطباء باش يجي داكشي واقعي
+        $medecins = [
+            ['prenom' => 'Ahmed', 'nom' => 'Alaoui'],
+            ['prenom' => 'Sara', 'nom' => 'El Mansouri'],
+            ['prenom' => 'Yassine', 'nom' => 'Tazi'],
+            ['prenom' => 'Karima', 'nom' => 'Bennani'],
+            ['prenom' => 'Driss', 'nom' => 'Roumani'],
+        ];
 
+        foreach ($medecins as $index => $data) {
+            User::updateOrCreate(
+                ['email' => "medecin" . ($index + 1) . "@test.com"],
+                [
+                    'prenom' => $data['prenom'],
+                    'nom' => $data['nom'],
+                    'role' => 'medecin',
+                    'password' => Hash::make('12345678'),
+                ]
+            );
+        }
         // نكريو المرضى غير إيلا كانت الداتابيز خاوية (باش مايتزادوش بزاف فكل مرة)
         if (Patient::count() == 0) {
             Patient::factory(50)->create([
