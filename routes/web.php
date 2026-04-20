@@ -27,10 +27,9 @@ Route::get('/', function () {
 });
 
 // [Houcine] Routes dashboard par rôle - Sprint 1
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('dashboard.admin');
-    })->middleware('role:admin')->name('admin.dashboard');
+    Route::get('/admin/dashboard', [UserController::class, 'dashboard'])
+        ->middleware('role:admin')
+        ->name('admin.dashboard');
 
     Route::get('/medecin/dashboard', function () {
         return view('dashboard.medecin');
@@ -43,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patient/dashboard', function () {
         return view('dashboard.patient');
     })->middleware('role:patient')->name('patient.dashboard');
-});
+
 
 Route::middleware(['auth', 'role:admin,medecin,secretaire'])->group(function () {
     Route::resource('patients', PatientController::class);
