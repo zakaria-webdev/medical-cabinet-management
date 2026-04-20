@@ -7,8 +7,7 @@ use App\Http\Controllers\DossierMedicalController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RendezVousController;
 use App\Http\Controllers\NotificationController;
-
-
+use App\Http\Controllers\SecretaireController;
 
 // [Houcine] Route racine - redirige vers login si non connecté, dashboard si connecté
 Route::get('/', function () {
@@ -36,9 +35,9 @@ Route::middleware('auth')->group(function () {
         return view('dashboard.medecin');
     })->middleware('role:medecin')->name('medecin.dashboard');
 
-    Route::get('/secretaire/dashboard', function () {
-        return view('dashboard.secretaire');
-    })->middleware('role:secretaire')->name('secretaire.dashboard');
+    Route::get('/secretaire/dashboard', [SecretaireController::class, 'dashboard'])
+        ->middleware('role:secretaire')
+        ->name('secretaire.dashboard');
 
     Route::get('/patient/dashboard', function () {
         return view('dashboard.patient');
