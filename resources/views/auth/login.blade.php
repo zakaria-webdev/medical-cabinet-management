@@ -95,6 +95,38 @@
                     </p>
                 </div>
 
+                {{-- ======================================================== --}}
+                {{-- [NOUVEAU] Boutons de test rapide pour le jury / soutenance --}}
+                {{-- ======================================================== --}}
+                <div class="mt-4 pt-3 border-top text-center">
+                    <p class="text-muted small mb-3 fw-bold">
+                        <i class="fas fa-magic text-primary me-1"></i> Mode Démo (Auto-remplissage)
+                    </p>
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill fw-bold" onclick="fillLogin('admin@test.com', '12345678')">
+                            🛡️ Admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill fw-bold" onclick="fillLogin('medecin1@test.com', '12345678')">
+                            🩺 Médecin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success rounded-pill fw-bold" onclick="fillLogin('secretaire@test.com', '12345678')">
+                            👩‍💻 Secrétaire
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-pill fw-bold" onclick="fillLogin('patient@test.com', '12345678')">
+                            🤒 Patient
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Script Javascript pour remplir les champs email et password --}}
+                <script>
+                    function fillLogin(email, password) {
+                        document.getElementById('email').value = email;
+                        document.getElementById('password').value = password;
+                    }
+                </script>
+                {{-- ======================================================== --}}
+
             </div>
         </div>
 

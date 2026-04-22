@@ -11,18 +11,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // كنستعملو updateOrCreate باش إيلا كان موجود يبدلو، وإيلا ماكانش يكريه
-        $user = User::updateOrCreate(
-            ['email' => 'admin@test.com'], // كنقلبو بهاد الإيميل
+        // 1. حساب الأدمين (تم توحيد المودپاس باش يخدم مع زر التجريب)
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@test.com'],
             [
                 'nom' => 'Admin',
                 'prenom' => 'Test',
                 'role' => 'admin',
-                'password' => Hash::make('password'), // دابا حددنا المودپاس بزز
+                'password' => Hash::make('12345678'),
             ]
         );
-        // 2. [الجديد] نكرييو 5 ديال الأطباء واجدين
-        // قائمة بأسماء الأطباء باش يجي داكشي واقعي
+
+        // 2. حسابات الأطباء (5 أطباء بأسماء واقعية)
         $medecins = [
             ['prenom' => 'Ahmed', 'nom' => 'Alaoui'],
             ['prenom' => 'Sara', 'nom' => 'El Mansouri'],
@@ -42,10 +42,40 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
-        // نكريو المرضى غير إيلا كانت الداتابيز خاوية (باش مايتزادوش بزاف فكل مرة)
-        if (Patient::count() == 0) {
+
+        // 3. [الجديد] حساب الكاتبة (Secrétaire)
+        User::updateOrCreate(
+            ['email' => 'secretaire@test.com'],
+            [
+                'nom' => 'Secrétaire',
+                'prenom' => 'Test',
+                'role' => 'secretaire',
+                'password' => Hash::make('12345678'),
+            ]
+        );
+
+        // 4. [الجديد] حساب المريض ديال التجريب (Patient Test)
+        $patientUser = User::updateOrCreate(
+            ['email' => 'patient@test.com'],
+            [
+                'nom' => 'Patient',
+                'prenom' => 'Test',
+                'role' => 'patient',
+                'password' => Hash::make('12345678'),
+            ]
+        );
+
+        // نكرييو بروفايل ديال هاد المريض فـ جدول patients (إيلا ماكانش عندو)
+        if (!Patient::where('user_id', $patientUser->id)->exists()) {
+            Patient::factory()->create([
+                'user_id' => $patientUser->id,
+            ]);
+        }
+
+        // 5. نكرييو 50 مريض عشوائي للتجريب (مرتبطين بالأدمين كيفما درتي)
+        if (Patient::count() <= 1) { // درنا <= 1 حيت ديجا كريينا واحد الفوق
             Patient::factory(50)->create([
-                'user_id' => $user->id,
+                'user_id' => $admin->id,
             ]);
         }
     }

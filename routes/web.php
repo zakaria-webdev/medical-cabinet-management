@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RendezVousController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SecretaireController;
+use App\Http\Controllers\ConsultationController;
 
 // [Houcine] Route racine - redirige vers login si non connecté, dashboard si connecté
 Route::get('/', function () {
@@ -45,8 +46,20 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'role:admin,medecin,secretaire'])->group(function () {
     Route::resource('patients', PatientController::class);
+
+    // ============================================================
+    // [Houcine] Routes Gestion des Utilisateurs (Admin)
+    // ============================================================
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/{user}/role', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
+
+    // [NOUVEAU] Routes pour la Gestion des Profils (Création, Modification & Suppression de Staff)
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+
+    // ✅ هادا هو السطر اللي كان ناقص ديال التعديل (Modifier)
+    Route::put('/admin/users/{id}/profile', [UserController::class, 'updateProfile'])->name('admin.users.updateProfile');
+
+    Route::delete('/admin/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
 Route::middleware('guest')->group(function () {
@@ -72,11 +85,9 @@ Route::middleware(['auth', 'role:admin,medecin'])->group(function () {
 // RDV accessible à tous les rôles authentifiés -
 Route::middleware(['auth'])->group(function () {
 
-
     // ✅ الجديد — حدد اسم الـ parameter يدوياً
     Route::resource('rendezvous', RendezVousController::class)
         ->parameters(['rendezvous' => 'rendezVous']);
-
 
     Route::get('rendezvous-calendar', [RendezVousController::class, 'calendar'])
         ->name('rendezvous.calendar');
@@ -87,21 +98,10 @@ Route::middleware(['auth'])->group(function () {
 // ============================================================
 // [Houcine] ROUTES NOTIFICATIONS - Sprint 2
 // ============================================================
-// Ces routes permettent à l'utilisateur connecté de :
-//   - voir toutes ses notifications         → GET  /notifications
-//   - marquer une notification comme lue    → POST /notifications/{id}/read
-//   - marquer toutes comme lues             → POST /notifications/read-all
-//
-// Protégées par middleware 'auth' uniquement :
-// toutes les rôles ont accès à leurs propres notifications
-// (médecin, secrétaire, admin, patient)
-// ============================================================
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
 
-    // IMPORTANT : la route read-all doit être AVANT {id}/read
-    // sinon Laravel interpréterait "read-all" comme un {id}
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.markAllAsRead');
 
@@ -110,15 +110,11 @@ Route::middleware('auth')->group(function () {
 });
 
 
-use App\Http\Controllers\ConsultationController;
-
 // Zakaria : Routes pour les consultations et ordonnances
 // Protégées par le middleware d'authentification de Houcine
 Route::resource('consultations', ConsultationController::class)->middleware(['auth']);
 // Zakaria : Routes pour generer en PDF
 Route::get('/consultations/{id}/pdf', [ConsultationController::class, 'generatePDF'])->name('consultations.pdf');
-
-
 
 
 Route::get('/install-db', function () {
